@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: dictionary-app
+  webflux:
+    base-path: /api
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+logging:
+  level:
+    root: INFO
+    com.dictionary: DEBUG
+
+dictionary:
+  api:
+    url: https://api.dictionaryapi.dev/api/v2/entries/en

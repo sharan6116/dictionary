@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  dictionary-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - JAVA_OPTS=-Xmx512m -Xms256m
+      - SPRING_APPLICATION_NAME=dictionary-app
+      - SPRING_PROFILES_ACTIVE=prod
+    container_name: dictionary-app
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/v1/dictionary/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

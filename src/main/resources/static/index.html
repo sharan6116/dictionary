@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dictionary App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-size: 1.1em;
+            padding: 20px;
+        }
+
+        .error {
+            background-color: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #c33;
+        }
+
+        .word-container {
+            margin-top: 30px;
+        }
+
+        .word-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 15px;
+        }
+
+        .word-title {
+            font-size: 2.5em;
+            color: #333;
+            font-weight: 700;
+        }
+
+        .phonetic {
+            color: #667eea;
+            font-size: 1.2em;
+            font-style: italic;
+        }
+
+        .audio-btn {
+            background-color: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .audio-btn:hover {
+            background-color: #764ba2;
+            transform: scale(1.1);
+        }
+
+        .meaning {
+            margin: 25px 0;
+        }
+
+        .part-of-speech {
+            font-size: 1.4em;
+            color: #333;
+            font-weight: 600;
+            font-style: italic;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+
+        .definitions {
+            margin: 15px 0;
+        }
+
+        .definition-label {
+            color: #999;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .definition {
+            background-color: #f9f9f9;
+            padding: 10px 15px;
+            margin: 8px 0;
+            border-left: 3px solid #667eea;
+            border-radius: 4px;
+        }
+
+        .example {
+            color: #666;
+            font-style: italic;
+            margin-top: 8px;
+        }
+
+        .synonyms, .antonyms {
+            margin: 15px 0;
+        }
+
+        .section-title {
+            font-weight: 600;
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        .tag {
+            display: inline-block;
+            background-color: #e8f0fe;
+            color: #667eea;
+            padding: 5px 12px;
+            margin: 5px 5px 5px 0;
+            border-radius: 20px;
+            font-size: 0.95em;
+        }
+
+        .source-urls {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .source-urls a {
+            color: #667eea;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+
+        .source-urls a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📖 Dictionary</h1>
+        <p class="subtitle">Search for word definitions instantly</p>
+
+        <div class="search-container">
+            <input type="text" id="wordInput" placeholder="Enter a word to search..." autocomplete="off">
+            <button onclick="searchWord()">Search</button>
+        </div>
+
+        <div id="content"></div>
+    </div>
+
+    <script>
+        const API_BASE = '/api/v1/dictionary';
+
+        // Allow searching with Enter key
+        document.getElementById('wordInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                searchWord();
+            }
+        });
+
+        function searchWord() {
+            const word = document.getElementById('wordInput').value.trim();
+            if (!word) {
+                alert('Please enter a word to search');
+                return;
+            }
+
+            const content = document.getElementById('content');
+            content.innerHTML = '<div class="loading">🔍 Searching...</div>';
+
+            fetch(`${API_BASE}/search/${word}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Word not found');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (Array.isArray(data) && data.length > 0) {
+                        displayResults(data);
+                    } else {
+                        content.innerHTML = '<div class="error">❌ Word not found. Try another search.</div>';
+                    }
+                })
+                .catch(error => {
+                    content.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                });
+        }
+
+        function displayResults(results) {
+            const content = document.getElementById('content');
+            const wordData = results[0];
+
+            let html = '<div class="word-container">';
+
+            // Word Header
+            html += '<div class="word-header">';
+            html += `<div><div class="word-title">${wordData.word}</div>`;
+            if (wordData.phonetic) {
+                html += `<div class="phonetic">${wordData.phonetic}</div>`;
+            }
+            html += '</div>';
+
+            // Audio
+            if (wordData.phonetics && wordData.phonetics.some(p => p.audio)) {
+                const audio = wordData.phonetics.find(p => p.audio);
+                html += `<button class="audio-btn" onclick="playAudio('${audio.audio}')">🔊</button>`;
+            }
+            html += '</div>';
+
+            // Meanings
+            if (wordData.meanings) {
+                wordData.meanings.forEach(meaning => {
+                    html += '<div class="meaning">';
+                    html += `<div class="part-of-speech">${meaning.partOfSpeech}</div>`;
+
+                    if (meaning.definitions) {
+                        html += '<div class="definitions">';
+                        html += '<div class="definition-label">Meanings:</div>';
+                        meaning.definitions.forEach(def => {
+                            html += '<div class="definition">';
+                            html += `<div>${def.definition}</div>`;
+                            if (def.example) {
+                                html += `<div class="example">"${def.example}"</div>`;
+                            }
+                            html += '</div>';
+                        });
+                        html += '</div>';
+                    }
+
+                    if (meaning.synonyms && meaning.synonyms.length > 0) {
+                        html += '<div class="synonyms">';
+                        html += '<div class="section-title">Synonyms:</div>';
+                        meaning.synonyms.forEach(syn => {
+                            html += `<span class="tag">${syn}</span>`;
+                        });
+                        html += '</div>';
+                    }
+
+                    if (meaning.antonyms && meaning.antonyms.length > 0) {
+                        html += '<div class="antonyms">';
+                        html += '<div class="section-title">Antonyms:</div>';
+                        meaning.antonyms.forEach(ant => {
+                            html += `<span class="tag">${ant}</span>`;
+                        });
+                        html += '</div>';
+                    }
+
+                    html += '</div>';
+                });
+            }
+
+            // Source URLs
+            if (wordData.sourceUrls && wordData.sourceUrls.length > 0) {
+                html += '<div class="source-urls">';
+                html += '<strong>Source:</strong> ';
+                wordData.sourceUrls.forEach(url => {
+                    html += `<a href="${url}" target="_blank">${url}</a>`;
+                });
+                html += '</div>';
+            }
+
+            html += '</div>';
+            content.innerHTML = html;
+        }
+
+        function playAudio(audioUrl) {
+            if (audioUrl) {
+                const audio = new Audio(audioUrl);
+                audio.play().catch(err => console.error('Error playing audio:', err));
+            }
+        }
+    </script>
+</body>
+</html>
