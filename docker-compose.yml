@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "3000:8080"
     environment:
       - JAVA_OPTS=-Xmx512m -Xms256m
       - SPRING_APPLICATION_NAME=dictionary-app
